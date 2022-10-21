@@ -1,0 +1,128 @@
+{% extends 'supervisor/base.html' %}
+{% block body %}
+    <h2>Harmonogram</h2>
+    <br>
+    <div class="card w-75">
+        <h5 class="card-header">Dny pracovního klidu</h5>
+        <div class="card-body">
+            <form method="post" action="">
+                {{ add_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ add_form.title.label(class="form-label") }}
+                    {% if add_form.title.errors %}
+                        {{ add_form.title(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in add_form.title.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ add_form.title(class="form-control") }}
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ add_form.start_date.label(class="form-label") }}
+                    <div class="input-group">
+                        {% if add_form.start_date.errors %}
+                            {{ add_form.start_date(class="datepicker form-control is-invalid") }}
+                        {% else %}
+                            {{ add_form.start_date(class="datepicker form-control") }}
+                        {% endif %}
+                        {% if add_form.end_date.errors %}
+                            {{ add_form.end_date(class="datepicker form-control is-invalid") }}
+                        {% else %}
+                            {{ add_form.end_date(class="datepicker form-control") }}
+                        {% endif %}
+                        <div class="invalid-feedback">
+                            {% if add_form.start_date.errors %}
+                                {% for error in add_form.start_date.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if add_form.end_date.errors %}
+                                {% for error in add_form.end_date.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group" role="group" aria-label="First group">
+                        <input type="reset" class="btn btn-light" value="Reset">
+                    </div>
+                    <div class="input-group">
+                        {{ add_form.add_submit(class="btn btn-success") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <br>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Seznam speciálních dnů
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                <tr>
+                    <th>Udalost</th>
+                    <th>Začatek</th>
+                    <th>Konec</th>
+                    <th>Upravit</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if non_working_window_info is not none %}
+                    <tr>
+                        {% for id, title, start_date, end_date in non_working_window_info %}
+                            <td>{{ title }}</td>
+                            <td>{{ start_date.strftime('%d.%m.') }}</td>
+                            <td>{{ end_date.strftime('%d.%m.') }}</td>
+                            <td><button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_non_working_window" onclick="inputHandler.setInputValue('{{ id }}')">Smazat</button></td>
+                            </tr>
+                        {% endfor %}
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Delete student modal -->
+    <div class="modal" id="delete_non_working_window">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                 <form method="post" action="">
+                    {{ delete_form.hidden_tag() }}
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Odebírání události</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <p>Opravdu chcete událost odebrat?</p>
+                    <div id="divCheckbox" style="display: none;">
+                    {{ delete_form.non_working_window_id() }}
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                     {{ delete_form.delete_submit(class="btn btn-danger") }}
+                </div>
+                 </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+    inputHandler = new InputHandler('non_working_window_id')
+    </script>
+{% endblock %}

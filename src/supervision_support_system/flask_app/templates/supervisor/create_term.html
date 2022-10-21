@@ -1,0 +1,195 @@
+{% extends 'supervisor/base.html' %}
+{% block body %}
+    <form method="post" action="">
+        <h2>Přidat termín</h2><br>
+        <div class="card w-75">
+            <div class="card-body">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.start_date.label(class="form-label") }}
+                    <div class="input-group">
+                        {% if form.start_date.errors %}
+                            {{ form.start_date(class="form-control is-invalid") }}
+                        {% else %}
+                            {{ form.start_date(class="form-control") }}
+                        {% endif %}
+                        {% if form.end_date.errors %}
+                            {{ form.end_date(class="form-control is-invalid") }}
+                        {% else %}
+                            {{ form.end_date(class="form-control") }}
+                        {% endif %}
+                        <div class="invalid-feedback">
+                            {% if form.start_date.errors %}
+                                {% for error in form.start_date.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if form.end_date.errors %}
+                                {% for error in form.end_date.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.start_time.label(class="form-label") }}
+                    <div class="input-group">
+                        {% if form.start_time.errors %}
+                            {{ form.start_time(class="form-control is-invalid") }}
+                        {% else %}
+                            {{ form.start_time(class="form-control") }}
+                        {% endif %}
+                        {% if form.end_time.errors %}
+                            {{ form.end_time(class="form-control is-invalid") }}
+
+                        {% else %}
+                            {{ form.end_time(class="form-control") }}
+                        {% endif %}
+                        <div class="invalid-feedback">
+                            {% if form.start_time.errors %}
+                                {% for error in form.start_time.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if form.end_time.errors %}
+                                {% for error in form.end_time.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        {{ form.repeat_bool.label(class="form-check-label") }}
+                        {{ form.repeat_bool(class="form-check-input", id="repeatCheckbox", onclick="handleCheckBox()") }}
+                        <div style="display:none" id="repeatForm">
+                            <br>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Každý</span>
+                            {{ form.repeat(class="form-select") }}
+                        </div>
+                        <div class="input-group">
+                            <div class="form-check form-check-inline">
+                                {{ form.monday.label(class="form-check-label") }}
+                                {{ form.monday(class="form-check-input") }}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{ form.tuesday.label(class="form-check-label") }}
+                                {{ form.tuesday(class="form-check-input") }}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{ form.wednesday.label(class="form-check-label") }}
+                                {{ form.wednesday(class="form-check-input") }}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{ form.thursday.label(class="form-check-label") }}
+                                {{ form.thursday(class="form-check-input") }}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{ form.friday.label(class="form-check-label") }}
+                                {{ form.friday(class="form-check-input") }}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{ form.saturday.label(class="form-check-label") }}
+                                {{ form.saturday(class="form-check-input") }}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{ form.sunday.label(class="form-check-label") }}
+                                {{ form.sunday(class="form-check-input") }}
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    {{ form.student.label(class="form-label") }}
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Student</span>
+                        {% if form.student.errors %}
+                            {{ form.student(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.student.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.student(class="form-select") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <hr>
+                <div>Musíte vyplnit jedno z následujících polí, druhé vám systém dopočítá</div>
+                <span class="form-text">Pokud jste vyplnili oba, systém vypočítá délku konzultace</span>
+                <hr>
+
+                <div class="mb-3">
+                    {{ form.term_duration.label(class="form-label") }}
+                    {% if form.term_duration.errors %}
+                        {{ form.term_duration(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.term_duration.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.term_duration(class="form-control") }}
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.term_count.label(class="form-label") }}
+                    {% if form.term_count.errors %}
+                        {{ form.term_count(class="form-control is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.term_count.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.term_count(class="form-control") }}
+                    {% endif %}
+                    <br>
+                    <div class="form-check form-check-inline">
+                        {{ form.detect_non_working_term.label(class="form-check-label") }}
+                        {{ form.detect_non_working_term(class="form-check-input") }}
+                    </div>
+                </div>
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group" role="group" aria-label="First group">
+                        <input type="reset" class="btn btn-light" value="Reset">
+                        {{ form.count_submit(class="btn btn-primary") }}
+                    </div>
+                    <div class="input-group">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createTerm">
+                            Vytvořit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Create consultation term modal -->
+        <div class="modal" id="createTerm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Vytvoření termínů</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        Opravdu chcete termín vytvořit termín?
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        {{ form.create_submit(class="btn btn-success") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

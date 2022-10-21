@@ -1,0 +1,132 @@
+{% extends 'supervisor/base.html' %}
+{% block body %}
+    <br>
+    <h2>Seznam studentů</h2>
+    <br>
+    <div class="card mb-4">
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Upravit</th>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Upravit</th>
+                </tr>
+                </tfoot>
+                <tbody>
+                <form action="" method="post">
+                    {% for name, surname, email, user_id in student_info %}
+                        <tr>
+                            <td><a href="{{ url_for('users.student_information',user_id=user_id) }}">{{ name }} {{ surname }}</a></td>
+                            <td>{{ email }}</td>
+                            <td><button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_student" onclick="inputHandler.setInputValue('{{ user_id }}')">Odstranit</button></td>
+                        </tr>
+                    {% endfor %}
+                </form>
+                </tbody>
+            </table>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_student">Přidat studenta</button>
+        </div>
+    </div>
+
+
+    <!-- Add student modal -->
+    <div class="modal" id="add_student">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="" method="post">
+                    {{ add_form.hidden_tag() }}
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Přidávání studentů</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            {{ add_form.emails.label(class="form-label") }}
+                            {% if add_form.emails.errors %}
+                                {{ add_form.emails(class="form-control is-invalid", rows="3") }}
+                                <div class="invalid-feedback">
+                                    {% for error in add_form.emails.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ add_form.emails(class="form-control", rows="3") }}
+                            {% endif %}
+                        </div>
+                        <div>
+                            <p>
+                                <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#addNoteTextArea" aria-expanded="false" aria-controls="collapseExample">
+                                    Poznámka
+                                </button>
+                            </p>
+                            <div class="collapse" id="addNoteTextArea">
+                                    {{ add_form.note_content.label(class="form-label") }}
+                                    {% if add_form.note_content.errors %}
+                                        {{ add_form.note_content(class="form-control is-invalid", rows="5") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in add_form.note_content.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ add_form.note_content(class="form-control", rows="3") }}
+                                    {% endif %}
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button class="btn btn-light" type="reset" form="add_user_form">Resetovat</button>
+                        {{ add_form.submit(class="btn btn-primary") }}
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete student modal -->
+    <div class="modal" id="delete_student">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                 <form action="" method="post">
+                    {{ delete_form.hidden_tag() }}
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Odebírání studenta</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <p>Opravdu chcete studenta odebrat?</p>
+                    <div id="divCheckbox" style="display: none;">
+                    {{ delete_form.user_id() }}
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+{#                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ano</button>#}
+                     {{ delete_form.submit(class="btn btn-danger") }}
+                </div>
+                 </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+ inputHandler = new InputHandler('user_id')
+    </script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'student/base.html' %}
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <p>
+            <h5 class="card-title">Podrobnosti rezervace</h5>
+        </div>
+        <div class="card-body">
+            <div>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>Student</th>
+                        <th>Stav</th>
+                        <th>Vytvořil</th>
+                        <th>Zrušil</th>
+                        <th>Datum</th>
+                        <th>Vytvořeno</th>
+                        <th>Zrušeno</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% for reserved, state, creator, canceller, term_date, term_time, creation_datetime, cancellation_datetime, user_id in reserve_info %}
+                        <td>{{ reserved }}</td>
+                        <td>{{ state }}</td>
+                        <td>{{ creator }}</td>
+                        <td>{{ canceller }}</td>
+                        <td>{{ term_date.strftime("%d-%m-%Y")}}, {{term_time.strftime("%H:%M")}}</td>
+                        <td>{{ creation_datetime.strftime("%d-%m-%Y, %H:%M") }}</td>
+                        <td>{{ cancellation_datetime.strftime("%d-%m-%Y, %H:%M") if cancellation_datetime is not none }}</td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="card-footer"><br><br></div>
+    </div>
+
+    <br><br>
+    <div class="card">
+        <div class="card-header">
+            Vaše poznámka
+        </div>
+        <div class="card-body">
+            <div class="card-text">
+                        <span id="note_content" style="white-space: pre-line">
+                        {{ student_note }}
+                        </span>
+            </div>
+            <br>
+        </div>
+    </div>
+
+{% endblock %}

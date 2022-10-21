@@ -1,0 +1,156 @@
+{% extends 'student/base.html' %}
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <p><h5 class="card-title">Základní informace</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Jméno</th>
+                    <th scope="col">Příjmení</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Telefonní číslo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    {% for name, surname, email, phone_number in  user_info %}
+                    <td>{{ name }}</td>
+                    <td>{{ surname }}</td>
+                    <td>{{ email }}</td>
+                    <td>{{ phone_number }}</td>
+                    {% endfor %}
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeDataModal">Upravit</button>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#changePasswordModal" >Změnit heslo</button>
+        </div>
+    </div>
+
+    <!-- Change profile data modal -->
+    <div class="modal" id="changeDataModal">
+        <form method="post" action="">
+            {{ profile_form.hidden_tag() }}
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Změna osobních údajů</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="container mt-3">
+                            <div class="mb-3">
+                                {{ profile_form.name.label(class="form-label") }}
+                                {% if profile_form.name.errors %}
+                                    {{ profile_form.name(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in profile_form.name.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ profile_form.name(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ profile_form.surname.label(class="form-label") }}
+                                {% if profile_form.surname.errors %}
+                                    {{ profile_form.surname(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in profile_form.surname.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ profile_form.surname(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                {{ profile_form.phone_number.label(class="form-label") }}
+                                {% if profile_form.phone_number.errors %}
+                                    {{ profile_form.phone_number(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in profile_form.phone_number.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ profile_form.phone_number(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        {{ profile_form.profile_submit(class="btn btn-primary") }}
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Change password modal -->
+    <div class="modal" id="changePasswordModal">
+     <form method="post" action="">
+         {{ password_form.hidden_tag() }}
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Změna hesla</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="container mt-3">
+                         <div class="mb-3">
+                                {{ password_form.actual_password.label(class="form-label") }}
+                                {% if password_form.actual_password.errors %}
+                                    {{ password_form.actual_password(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in password_form.actual_password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ password_form.actual_password(class="form-control") }}
+                                {% endif %}
+                            </div>
+                     <div class="mb-3">
+                                {{ password_form.new_password.label(class="form-label") }}
+                                {% if password_form.new_password.errors %}
+                                    {{ password_form.new_password(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in password_form.new_password.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ password_form.new_password(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            {{ password_form.password_submit(class="btn btn-primary") }}
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                </div>
+
+            </div>
+        </div>
+     </form>
+    </div>
+
+{% endblock %}

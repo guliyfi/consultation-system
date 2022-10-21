@@ -1,0 +1,52 @@
+{% extends 'student/base.html' %}
+{% block body %}
+    <p id="demo"></p>
+    <h1 class="mt-4">Kalendář konzultací</h1>
+    <div id="text_card">
+        <div id="text_card_content" style="white-space: pre-line">
+            {{ content }}
+        </div>
+    </div>
+    <br>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            <span id="calendarHeader"></span>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered  caption-top">
+                <thead>
+                <tr>
+                    <th scope="col">PO</th>
+                    <th scope="col">ÚT</th>
+                    <th scope="col">ST</th>
+                    <th scope="col">ČT</th>
+                    <th scope="col">PÁ</th>
+                    <th scope="col">SO</th>
+                    <th scope="col">NE</th>
+                </tr>
+                </thead>
+                <tbody id="calendarBody">
+                </tbody>
+            </table>
+            <div class="page-hero d-flex align-items-center justify-content-center" style="column-gap: 4px;">
+                <button type="button"  class="btn btn-secondary" onclick="calendarHandler.displayPrevMonth()">Předchozí</button>
+                <button type="button"  class="btn btn-secondary" onclick="calendarHandler.displayCurrMonth()">Tento měsíc</button>
+                <button type="button" class="btn btn-secondary" onclick="calendarHandler.displayNextMonth()">Další</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-success">Volno</button>
+                <button type="button" class="btn btn-danger">Obsazeno</button>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        let calendarHandler = new CalendarHandler();
+        calendarHandler.displayCalendar();
+    </script>
+{% endblock %}

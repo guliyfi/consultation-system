@@ -1,0 +1,62 @@
+{% extends 'student/base.html' %}
+{% block body %}
+    <br>
+    <div class="card">
+        <div class="card-header">
+            <p><h5 class="card-title">Základní informace</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Jméno</th>
+                    <th scope="col">Příjmení</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Telefonní číslo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    {% for name, surname, email, phone_number in  user_info %}
+                        <td>{{ name }}</td>
+                        <td>{{ surname }}</td>
+                        <td>{{ email }}</td>
+                        <td>{{ phone_number }}</td>
+                    {% endfor %}
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <br>
+        </div>
+    </div>
+    <br>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Seznam rezervací
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                <tr>
+                    <th>Rezervace</th>
+                    <th>Stav</th>
+                    <th>Datum</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for reservation_id, reservation_state, consultation_term, consultation_time in reservation_info %}
+                    <tr>
+                        <td><a href="{{ url_for('reservations.reservation_detail', reservation_id=reservation_id) }}">Rezervace</a></td>
+                        <td>{{ reservation_state }}</td>
+                        <td>{{ consultation_term.strftime('%d-%m-%Y')}}, {{ consultation_time.strftime('%H:%M') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

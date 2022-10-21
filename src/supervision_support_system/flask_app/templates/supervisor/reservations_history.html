@@ -1,0 +1,38 @@
+{% extends 'supervisor/base.html' %}
+{% block body %}
+    <br>
+    <h2>Historie rezervací</h2>
+    <br>
+    <div class="card mb-4">
+        <div class="card-body">
+            <table id="datatablesSimple">
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Stav</th>
+                    <th>Detail</th>
+                    <th>Datum</th>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th>Student</th>
+                    <th>Stav</th>
+                    <th>Detail</th>
+                    <th>Datum</th>
+                </tr>
+                </tfoot>
+                <tbody>
+                {% for user_id, name, surname ,reservation_state, reservation_id, consultation_term, consultation_time in info %}
+                    <tr>
+                        <td><a href="{{ url_for('users.student_information', user_id=user_id) }}">{{ name }} {{ surname }}</a></td>
+                        <td>{{ reservation_state }}</td>
+                        <td><a href="{{ url_for('reservations.reservation_detail', reservation_id=reservation_id) }}">...</a></td>
+                        <td>{{ consultation_term.strftime('%d-%m-%Y')}}, {{ consultation_time.strftime('%H:%M') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

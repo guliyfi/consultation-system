@@ -1,0 +1,106 @@
+{% extends 'supervisor/base.html' %}
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <p>
+            <h5 class="card-title">Podrobnosti rezervace</h5>
+        </div>
+        <div class="card-body">
+            <div>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>Student</th>
+                        <th>Stav</th>
+                        <th>Vytvořil(a)</th>
+                        <th>Zrušil(a)</th>
+                        <th>Datum</th>
+                        <th>Vytvořeno</th>
+                        <th>Zrušeno</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% for reserved, state, creator, canceller, term_date, term_time, creation_datetime, cancellation_datetime, student_id in reserve_info %}
+                        <td><a href="{{ url_for('users.student_information', user_id=student_id) }}">{{ reserved }}</a></td>
+                        <td>{{ state }}</td>
+                        <td>{{ creator }}</td>
+                        <td>{{ canceller if cancellation_datetime is not none }}</td>
+                        <td>{{ term_date.strftime("%d-%m-%Y")}}, {{term_time.strftime("%H:%M")}}</td>
+                        <td>{{ creation_datetime.strftime('%d-%m-%Y, %H:%M') }}</td>
+                        <td>{{ cancellation_datetime.strftime('%d-%m-%Y, %H:%M')  if cancellation_datetime is not none }}</td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    Vaše poznámka
+                </div>
+                <div class="card-body">
+                    <div class="card-text">
+                        <span id="note_content" style="white-space: pre-line">
+                        {{ supervisor_note }}
+                        </span>
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_note">Upravit</button>
+                </div>
+            </div>
+            <br><br>
+             <div class="card">
+                <div class="card-header">
+                    Poznámka studenta
+                </div>
+                <div class="card-body">
+                    <div class="card-text">
+                        <span id="note_content" style="white-space: pre-line">
+                        {{ student_note }}
+                        </span>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer"><br><br></div>
+    </div>
+
+    <!-- Edit note modal -->
+    <div class="modal" id="edit_note">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Upravit poznámku</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="card-body">
+                        <form action="" method="post">
+                                {{ form.hidden_tag() }}
+                        <div class="form-group">
+                                {{ form.content(class="form-control", rows="20") }}
+                                <br>
+                                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                    <button class="btn btn-light" type="reset">Resetovat</button>
+                                    {{ form.submit(class="btn btn-success", rows="20") }}
+                                </div>
+                        </div>
+                        <br>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

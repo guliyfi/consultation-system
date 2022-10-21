@@ -1,0 +1,265 @@
+{% extends 'supervisor/base.html' %}
+
+{% block body %}
+    <table class="table" id="book_table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Čas</th>
+            <th scope="col">Přihlašen</th>
+            <th scope="col">Podrobnosti</th>
+            <th scope="col">Upravit</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for time, name, surname, id, button in reserve_info %}
+            {% if button == "blocked_btn" %}
+                <tr class="table-secondary" style="line-height: 30px;">
+                    {% else %}
+                <tr style="line-height: 30px;">
+            {% endif %}
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ time.strftime('%H:%M') }}</td>
+        <td>{{ name if name is not none }} {{ surname if surname is not none }}</td>
+        {% if id %}
+            <td><a href="{{ url_for('reservations.reservation_detail', reservation_id = id) }}">...</a></td>
+        {% else %}
+            <td></td>
+        {% endif %}
+        {% if button == "unbook_btn" %}
+            <td>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteReservation" onclick="timeInputHandler.setInputValue('{{  time.strftime('%H:%M')  }}')">
+                    Odhlásit
+                </button>
+            </td>
+        {% elif button == "book_btn" %}
+            <td>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addReservation" onclick="timeInputHandler.setInputValue('{{  time.strftime('%H:%M')  }}')" >
+                    Přihlásit
+                </button>
+            </td>
+        {% elif button == "blocked_btn" %}
+            <td>
+                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#cancelInfo">
+                    Zrušeno
+                </button>
+            </td>
+        {% else %}
+            <td></td>
+        {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#disableTerm">Zrušit</button>
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#info">Info</button>
+    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#waiting_list" >Pořadníky</button>
+
+    <!-- Add reservation modal -->
+    <div class="modal" id="addReservation">
+        <form method="post" action="{{ url_for('reservations.add_reservation') }}">
+            {{ add_reservation_form.hidden_tag() }}
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Přihlášení studenta na termín</h4>
+                        <button type="button" class="btn-close"  data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+
+                        <div class="input-group mb-3">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Přihlásit</span>
+                                {% if add_reservation_form.student.errors %}
+                                    {{ add_reservation_form.student(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in add_reservation_form.student.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ add_reservation_form.student(class="form-select") }}
+                                {% endif %}
+                                <div id="divCheckbox" style="display: none;">
+                                    {{ add_reservation_form.time() }}
+                                    {{ add_reservation_form.date() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        {{ add_reservation_form.add_submit(class="btn btn-success") }}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Delete reservation modal -->
+    <div class="modal" id="deleteReservation">
+        <form method="post" action="{{ url_for('reservations.cancel_reservation') }}">
+            {{ delete_reservation_form.hidden_tag() }}
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Odhlásit studenta z termínu</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        Opravdu se chcete odhlásit studenta z termínu ?
+                        <div id="divCheckbox" style="display: none;">
+                            {{ delete_reservation_form.time(class="form-select") }}
+                            {{ delete_reservation_form.date(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        {{ delete_reservation_form.delete_submit(class="btn btn-success") }}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Disable term modal -->
+    <div class="modal" id="disableTerm">
+        <form method="post" action="{{ url_for('reservations.disable_term') }}">
+            {{ disable_term_form.hidden_tag() }}
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Jaké termíny chcete zrušit ?</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        {{ disable_term_form.time_list(class="list-group-item", style="list-style-type: none;") }}
+                        <label>
+                            <input type="checkbox" onclick="toggle(this);" />
+                        </label> Vybrat vše<br />
+                        <br>
+                        <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#addNoteTextArea" aria-expanded="false" aria-controls="collapseExample">
+                            Poznámka
+                        </button>
+                        </p>
+                        <div class="collapse" id="addNoteTextArea">
+                            {{ disable_term_form.note.label(class="form-label") }}
+                            {{ disable_term_form.note(class="form-control", rows="5") }}
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <div class="btn-group me-2" role="group" aria-label="First group">
+                            <button type="reset" class="btn btn-light">Resetovat</button>
+                        </div>
+                        <div>
+                            <div id="divCheckbox" style="display: none;">
+                                {{ disable_term_form.date(class="form-select") }}
+                            </div>
+                            {{ disable_term_form.disable_submit(class="btn btn-primary") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Info modal -->
+    <div class="modal" id="info">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Informace o přihlašení a odhlášení z termínů</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <p>Termín lze odhlásit minimálně den před nahraným termínem, konzultaci však můžete přesunout.</p>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel student_info modal -->
+    <div class="modal" id="cancelInfo">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Zrušený termín</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <p>Zrušený termín znamená, že jej vedoucí práce z nějakého důvodu zrušil.
+                        Zkontrolujte svou poštu, pokud jste byli přihlášeni na tento termín, měli jste obdržet zprávu.</p>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Waiting list modal -->
+    <div class="modal" id="waiting_list">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Čekací listina</h4>
+                    <button type="button" class="btn-close"  data-bs-dismiss="modal"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <ul class="list-group">
+                        {% for id, user in waiting_list %}
+                            <a href='{{ url_for('users.student_information', user_id = id) }}' class="list-group-item"> {{ user }} </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+{% endblock %}
+
+{% block script %}
+    <script>
+        let timeInputHandler = new InputHandler('time');
+    </script>
+{% endblock %}
